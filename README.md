@@ -23,16 +23,6 @@ GOOGLE_ID=your_google_client_id
 GOOGLE_SECRET=your_google_client_secret
 
 
-# 3. Run development server
-npm run dev
-Open http://localhost:3000
-
-
-# 4. Production build
-npm run build
-npm run start
-
-
 ## Route Summary
 # Public pages
 - `/` Home
