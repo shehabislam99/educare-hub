@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
-export async function middleware(req) {
+export async function proxy(req) {
     const nextAuthToken = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     const customToken = req.cookies.get("token")?.value;
     const { pathname } = req.nextUrl;
@@ -49,7 +49,7 @@ export async function middleware(req) {
     return NextResponse.next();
 }
 
-// Apply middleware only to /dashboard routes
+// Apply proxy only to /dashboard routes
 export const config = {
     matcher: ["/dashboard/:path*"],
 };

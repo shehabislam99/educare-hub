@@ -7,12 +7,13 @@ import {
     FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, BookOpen, Star, CheckCircle, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Star, CheckCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
+import logo from "../../assets/istockphoto-1215255370-612x612.jpg";
 
 import { signIn, useSession } from "next-auth/react";
 
@@ -78,8 +79,8 @@ export default function LoginPage() {
                     className="relative z-10"
                 >
                     <Link href="/" className="flex items-center gap-2 mb-12">
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
-                            <BookOpen className="text-indigo-600 w-6 h-6" />
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+                            <img src={logo.src || logo} alt="EduHub Logo" className="w-full h-full object-cover" />
                         </div>
                         <span className="text-2xl font-bold font-display tracking-tight text-white hover:text-indigo-200 transition-colors">EduHub</span>
                     </Link>
@@ -93,32 +94,6 @@ export default function LoginPage() {
                     </p>
                 </motion.div>
 
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="relative z-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-10 max-w-md shadow-2xl"
-                >
-                    <div className="flex gap-1 mb-6">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                        ))}
-                    </div>
-                    <p className="text-xl italic mb-10 text-indigo-50 font-medium leading-relaxed">
-                        "The best learning platform I've used. Everything is so easy and clear."
-                    </p>
-                    <div className="flex items-center gap-4">
-                        <img
-                            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150"
-                            alt="Student"
-                            className="w-16 h-16 rounded-2xl border-2 border-white/30 shadow-xl"
-                        />
-                        <div>
-                            <p className="font-black text-xl tracking-tight text-white">Alex Johnson</p>
-                            <p className="text-xs text-indigo-200 font-black uppercase tracking-widest">Lead Developer</p>
-                        </div>
-                    </div>
-                </motion.div>
             </section>
 
             {/* Right Side: Login Form */}

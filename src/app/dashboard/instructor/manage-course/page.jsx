@@ -15,7 +15,7 @@ export default function ManageCoursesPage() {
         if (!session?.user) return;
         setIsLoading(true);
         try {
-            const res = await fetch(`/api/my-courses`);
+            const res = await fetch(`/api/my-courses`, { cache: 'no-store' });
             const data = await res.json();
             setCourses(Array.isArray(data) ? data : []);
         } catch (err) {
@@ -41,9 +41,11 @@ export default function ManageCoursesPage() {
                 alert("Course deleted successfully!");
                 fetchCourses(); // Refresh
             } else {
-                alert("Failed to delete course");
+                const data = await res.json().catch(() => ({}));
+                alert(data.error || "Failed to delete course");
             }
         } catch (err) {
+            console.error("Course deletion failed:", err);
             alert("An error occurred during deletion");
         }
     };

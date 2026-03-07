@@ -24,7 +24,7 @@ export default function CourseDetailsPage() {
           if (!id) return;
           const fetchCourse = async () => {
                try {
-                    const res = await fetch(`/api/course/${id}`);
+                    const res = await fetch(`/api/course/${id}`, { cache: 'no-store' });
                     if (res.ok) {
                          const data = await res.json();
                          setCourse(data);

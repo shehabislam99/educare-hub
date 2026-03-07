@@ -9,14 +9,12 @@ const PopularCourse = () => {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const res = await fetch('/api/course');
+                const res = await fetch('/api/course', { cache: 'no-store' });
                 if (res.ok) {
                     const data = await res.json();
                     // Just take the first 3 or most recent 3 as "popular"
                     setCourses(data.slice(0, 3));
                 }
-            } catch (error) {
-                console.error("Error fetching popular courses:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -25,16 +23,24 @@ const PopularCourse = () => {
     }, []);
 
     return (
-        <section className="py-24 bg-slate-50/50">
-            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-end mb-12">
-                    <div>
+        <section className="py-24">
+            <div className=" mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="relative mb-16">
+                    <div className="text-center max-w-3xl mx-auto">
                         <h2 className="text-3xl font-bold font-display text-slate-900 mb-4">Popular Courses</h2>
                         <p className="text-slate-600">The most trending courses right now.</p>
                     </div>
-                    <Link href="/course" className="text-indigo-600 font-bold flex items-center gap-1 hover:gap-2 transition-all">
+                    <Link
+                        href="/course"
+                        className="hidden md:inline-flex absolute right-0 top-1/2 -translate-y-1/2 text-indigo-600 font-bold items-center gap-1 hover:gap-2 transition-all"
+                    >
                         View All Courses <ArrowRight className="w-4 h-4" />
                     </Link>
+                    <div className="md:hidden text-center mt-4">
+                        <Link href="/course" className="text-indigo-600 font-bold inline-flex items-center gap-1 hover:gap-2 transition-all">
+                            View All Courses <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    </div>
                 </div>
 
                 {isLoading ? (

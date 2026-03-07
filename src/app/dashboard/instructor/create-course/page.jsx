@@ -1,225 +1,37 @@
 "use client";
 
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { BookOpen, DollarSign, Image as ImageIcon, Save, X, Plus, Trash2, Camera, Loader2, Sparkles, Rocket } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { uploadImage } from '@/lib/uploadImage';
+import React from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import CourseForm from "@/components/course/CourseForm";
 
 export default function CreateCoursePage() {
-    const { data: session } = useSession();
-    const { register, handleSubmit, formState: { errors } } = useForm();
-    const router = useRouter();
-    const [isLoading, setIsLoading] = React.useState(false);
-    const [isUploading, setIsUploading] = React.useState(false);
-    const [imagePreview, setImagePreview] = React.useState(null);
-    const [selectedFile, setSelectedFile] = React.useState(null);
+  const router = useRouter();
+  const { data: session } = useSession();
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setSelectedFile(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+  const handleCreate = async (payload) => {
+    const res = await fetch("/api/course", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-    const onSubmit = async (data) => {
-        if (!session?.user) {
-            alert('You must be logged in to create a course');
-            return;
-        }
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || "Failed to create course");
+    }
 
-        setIsLoading(true);
-        let imageUrl = data.thumbnail;
+    alert("Course created successfully!");
+    router.push("/dashboard/instructor/manage-course");
+  };
 
-        try {
-            if (selectedFile) {
-                setIsUploading(true);
-                imageUrl = await uploadImage(selectedFile);
-                setIsUploading(false);
-            }
-
-            if (!imageUrl) {
-                alert('Please upload a course thumbnail');
-                setIsLoading(false);
-                return;
-            }
-
-            const coursePayload = {
-                ...data,
-                thumbnail: imageUrl,
-                instructorId: session.user.id || session.user.email,
-                instructorName: session.user.name || session.user.username,
-            };
-
-            const res = await fetch('/api/course', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(coursePayload),
-            });
-            if (res.ok) {
-                alert('Course created successfully!');
-                router.push('/dashboard/instructor/manage-course');
-            } else {
-                alert('Failed to create course');
-            }
-        } catch (error) {
-            alert('An error occurred');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    return (
-        <div className="max-w-4xl mx-auto space-y-10 py-4">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="flex items-center gap-6">
-                    <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
-                        <Rocket className="w-7 h-7" />
-                    </div>
-                    <div>
-                        <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Launch Curriculum</h1>
-                        <p className="text-slate-500 font-medium">Design and deploy your next masterclass.</p>
-                    </div>
-                </div>
-                <button
-                    onClick={() => router.back()}
-                    className="p-3 bg-white border border-slate-100 rounded-2xl text-slate-400 hover:text-red-500 hover:border-red-100 transition-all shadow-sm flex items-center gap-2 group"
-                >
-                    <X className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-                    <span className="text-xs font-black uppercase tracking-widest hidden md:inline">Abort Deployment</span>
-                </button>
-            </div>
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                {/* Core Config */}
-                <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-8">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
-                            <Sparkles className="text-indigo-600 w-5 h-5" />
-                        </div>
-                        <h2 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Asset Metadata</h2>
-                    </div>
-
-                    <div className="grid gap-8">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Master Title</label>
-                            <input
-                                {...register('title', { required: 'Title is required' })}
-                                className="w-full bg-slate-50 border-none rounded-2xl h-14 px-6 text-sm font-bold focus:ring-2 focus:ring-indigo-500 transition-all text-slate-900"
-                                placeholder="e.g. SYSTEMS DESIGN BOOTCAMP"
-                            />
-                            {errors.title && <span className="text-red-500 text-[10px] font-bold uppercase mt-1 ml-1">{errors.title.message}</span>}
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Abstract & Objectives</label>
-                            <textarea
-                                {...register('description', { required: 'Description is required' })}
-                                rows={6}
-                                className="w-full bg-slate-50 border-none rounded-[2rem] p-6 text-sm font-medium focus:ring-2 focus:ring-indigo-500 transition-all text-slate-900 leading-relaxed"
-                                placeholder="What core competencies will your students acquire?"
-                            />
-                            {errors.description && <span className="text-red-500 text-[10px] font-bold uppercase mt-1 ml-1">{errors.description.message}</span>}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Economics & Visuals */}
-                <div className="grid md:grid-cols-2 gap-8">
-                    <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
-                                <DollarSign className="text-emerald-600 w-5 h-5" />
-                            </div>
-                            <h2 className="text-lg font-black text-slate-900 uppercase tracking-tighter">Economic Value</h2>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Market Price ($)</label>
-                            <div className="relative">
-                                <span className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
-                                <input
-                                    type="number"
-                                    {...register('price', { required: 'Price is required' })}
-                                    className="w-full bg-slate-50 border-none rounded-2xl h-14 pl-12 pr-6 text-sm font-black focus:ring-2 focus:ring-indigo-500 transition-all text-slate-900"
-                                    placeholder="99.99"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6">
-                        <div className="flex items-center gap-3 text-slate-900">
-                            <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
-                                <ImageIcon className="text-indigo-600 w-5 h-5" />
-                            </div>
-                            <h2 className="text-lg font-black uppercase tracking-tighter">Strategic Visual</h2>
-                        </div>
-
-                        <div className="relative group aspect-video rounded-2xl overflow-hidden bg-slate-100 border-2 border-dashed border-slate-200 hover:border-indigo-300 transition-all">
-                            {imagePreview ? (
-                                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-center p-6">
-                                    <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center">
-                                        <Camera className="w-6 h-6 text-slate-300" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Upload Master Visual</p>
-                                        <p className="text-[8px] text-slate-300 font-bold uppercase mt-1">PNG/JPG up to 10MB</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {isUploading && (
-                                <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-10">
-                                    <div className="flex flex-col items-center gap-2">
-                                        <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
-                                        <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Uploading...</p>
-                                    </div>
-                                </div>
-                            )}
-
-                            <input
-                                type="file"
-                                className="absolute inset-0 opacity-0 cursor-pointer z-20"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                            />
-                        </div>
-                        <input type="hidden" {...register('thumbnail')} value={imagePreview || ''} />
-                    </div>
-                </div>
-
-                <div className="flex justify-end items-center gap-8 pt-6">
-                    <button
-                        type="button"
-                        onClick={() => router.push('/dashboard/instructor/manage-course')}
-                        className="text-sm font-black text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-all"
-                    >
-                        Save Draft
-                    </button>
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="bg-indigo-600 text-white font-black py-4 px-12 rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 flex items-center gap-3 uppercase text-xs tracking-[0.2em]"
-                    >
-                        {isLoading ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                            <Save className="w-4 h-4" />
-                        )}
-                        {isLoading ? 'Deploying...' : 'Broadcast Course'}
-                    </button>
-                </div>
-            </form>
-        </div>
-    );
+  return (
+    <CourseForm
+      mode="create"
+      initialValues={{}}
+      sessionUser={session?.user}
+      onSubmitCourse={handleCreate}
+      onCancel={() => router.push("/dashboard/instructor/manage-course")}
+    />
+  );
 }

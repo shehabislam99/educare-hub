@@ -1,6 +1,9 @@
 import { connectToDatabase } from "@/lib/mongoConnect";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(req) {
     try {
         const { searchParams } = new URL(req.url);

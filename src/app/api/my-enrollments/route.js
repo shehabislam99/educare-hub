@@ -4,6 +4,9 @@ import { authOptions } from "../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(req) {
     try {
         const session = await getServerSession(authOptions);

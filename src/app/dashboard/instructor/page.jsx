@@ -2,8 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Plus, Users, BookOpen, BarChart3, DollarSign, Edit, Star, Loader2, TrendingUp, ArrowUpRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Plus, Users, BookOpen, DollarSign, Edit, Star, Loader2, TrendingUp, ArrowUpRight } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 
 export default function InstructorDashboard() {
@@ -15,7 +14,7 @@ export default function InstructorDashboard() {
     React.useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const res = await fetch('/api/my-courses');
+                const res = await fetch('/api/my-courses', { cache: 'no-store' });
                 if (res.ok) {
                     const data = await res.json();
                     setCourses(data);
@@ -203,7 +202,7 @@ export default function InstructorDashboard() {
                                             ))}
                                         </div>
                                     </div>
-                                    <p className="text-xs text-slate-400 italic font-medium leading-relaxed">"{pulse.text}"</p>
+                                    <p className="text-xs text-slate-400 italic font-medium leading-relaxed">{pulse.text}</p>
                                 </div>
                             ))}
                         </div>

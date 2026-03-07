@@ -2,6 +2,9 @@ import { connectToDatabase } from "@/lib/mongoConnect";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(req, { params }) {
     try {
         const { id } = await params;
@@ -76,7 +79,13 @@ export async function DELETE(req, { params }) {
         const db = await connectToDatabase();
         const coursesCollection = db.collection("courses");
 
-        const result = await coursesCollection.deleteOne({ _id: new ObjectId(id) });
+        let result;
+        try {
+            result = await coursesCollection.deleteOne({ _id: new ObjectId(id) });
+        } catch (e) {
+            // Fallback for legacy/string ids
+            result = await coursesCollection.deleteOne({ id: id });
+        }
 
         if (result.deletedCount === 0) {
             return NextResponse.json({ error: "Course not found" }, { status: 404 });

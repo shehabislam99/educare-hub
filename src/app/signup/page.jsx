@@ -7,7 +7,7 @@ import {
     FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, BookOpen, Sparkles, Camera, User, Loader2, GraduationCap, UserCheck, Check } from "lucide-react";
+import { Eye, EyeOff, Camera, User, Loader2, GraduationCap, UserCheck, Check } from "lucide-react";
 import { uploadImage } from "@/lib/uploadImage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,6 +15,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
+import logo from "../../assets/istockphoto-1215255370-612x612.jpg";
 
 export default function SignupPage() {
     const {
@@ -102,8 +103,8 @@ export default function SignupPage() {
                     className="relative z-10"
                 >
                     <Link href="/" className="flex items-center gap-2 mb-12">
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
-                            <BookOpen className="text-indigo-600 w-6 h-6" />
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg overflow-hidden">
+                            <img src={logo.src || logo} alt="EduHub Logo" className="w-full h-full object-cover" />
                         </div>
                         <span className="text-2xl font-bold font-display tracking-tight text-white hover:text-indigo-200 transition-colors">EduHub</span>
                     </Link>
@@ -117,38 +118,7 @@ export default function SignupPage() {
                     </p>
                 </motion.div>
 
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="relative z-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-10 max-w-md shadow-2xl"
-                >
-                    <div className="flex items-center gap-4 mb-6">
-                        <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
-                            <Sparkles className="text-white w-6 h-6" />
-                        </div>
-                        <div>
-                            <p className="font-black uppercase tracking-widest text-[10px] text-indigo-200">Global Community</p>
-                            <p className="font-bold text-xl">1M+ Members</p>
-                        </div>
-                    </div>
-                    <p className="text-indigo-50 leading-relaxed mb-8 font-medium">
-                        Learn from the best and grow your career with our expert-led courses.
-                    </p>
-                    <div className="flex -space-x-4">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <img
-                                key={i}
-                                className="w-12 h-12 rounded-2xl border-2 border-indigo-600 shadow-xl"
-                                src={`https://i.pravatar.cc/150?img=${i + 25}`}
-                                alt="User"
-                            />
-                        ))}
-                        <div className="w-12 h-12 rounded-2xl border-2 border-indigo-600 bg-white flex items-center justify-center text-xs font-black text-indigo-600 shadow-xl">
-                            +10k
-                        </div>
-                    </div>
-                </motion.div>
+              
             </section>
 
             {/* Right Side: Signup Form */}
@@ -160,7 +130,7 @@ export default function SignupPage() {
                 >
                     <div className="mb-12">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
-                            <Sparkles className="w-3 h-3" />
+                            
                             Join EduHub
                         </div>
                         <h2 className="text-4xl font-black text-slate-900 mb-2 uppercase tracking-tight">Sign Up</h2>
@@ -302,6 +272,34 @@ export default function SignupPage() {
                                     </button>
                                 </div>
                                 {errors.password && <span className="text-red-500 text-[10px] font-black uppercase mt-1 ml-1">{errors.password.message}</span>}
+                            </Field>
+
+                            <Field>
+                                <label className="flex items-start gap-3 p-4 rounded-2xl border border-slate-200 bg-white">
+                                    <input
+                                        type="checkbox"
+                                        className="mt-1 accent-indigo-600"
+                                        {...register("acceptPolicies", {
+                                            required: "You must accept terms and privacy policy"
+                                        })}
+                                    />
+                                    <span className="text-xs text-slate-600 leading-relaxed font-semibold">
+                                        I agree to EduHub{" "}
+                                        <Link href="/terms" className="text-indigo-600 hover:underline font-bold">
+                                            Terms of Service
+                                        </Link>{" "}
+                                        and{" "}
+                                        <Link href="/privacy" className="text-indigo-600 hover:underline font-bold">
+                                            Privacy Policy
+                                        </Link>
+                                        .
+                                    </span>
+                                </label>
+                                {errors.acceptPolicies && (
+                                    <span className="text-red-500 text-[10px] font-black uppercase mt-1 ml-1">
+                                        {errors.acceptPolicies.message}
+                                    </span>
+                                )}
                             </Field>
 
                             <Button

@@ -9,9 +9,9 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-indigo-600 text-white shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:shadow-indigo-200",
+        default: "bg-indigo-600 text-white shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:shadow-indigo-200 dark:shadow-sm dark:shadow-black/20",
         destructive:
-          "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-100",
+          "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-100 dark:shadow-sm dark:shadow-black/20",
         outline:
           "border-2 border-slate-200 bg-transparent hover:bg-slate-50 hover:border-slate-300 text-slate-700",
         secondary:
@@ -42,7 +42,7 @@ function Button({
   asChild = false,
   ...props
 }) {
-  const Comp = asChild ? Slot.Root : "button"
+  const Comp = asChild ? Slot : "button"
 
   return (
     <Comp
