@@ -26,7 +26,7 @@ const PopularCourse = () => {
 
     return (
         <section className="py-24 bg-slate-50/50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-end mb-12">
                     <div>
                         <h2 className="text-3xl font-bold font-display text-slate-900 mb-4">Popular Courses</h2>
@@ -46,7 +46,7 @@ const PopularCourse = () => {
                 ) : courses.length === 0 ? (
                     <div className="bg-white p-12 rounded-3xl border border-slate-100 text-center shadow-sm">
                         <Loader2 className="w-8 h-8 text-indigo-600 animate-spin mx-auto mb-4" />
-                        <p className="text-slate-500 font-medium">Synchronizing latest knowledge modules...</p>
+                        <p className="text-slate-500 font-medium">Loading latest courses...</p>
                     </div>
                 ) : (
                     <div className="grid md:grid-cols-3 gap-8">

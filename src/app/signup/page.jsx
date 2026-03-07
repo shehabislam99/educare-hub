@@ -109,11 +109,11 @@ export default function SignupPage() {
                     </Link>
 
                     <h1 className="text-6xl font-black font-display leading-[0.9] mb-8 uppercase tracking-tighter">
-                        Empower Your <br />
-                        <span className="text-indigo-200">Potential.</span>
+                        Start Your <br />
+                        <span className="text-indigo-200">Journey.</span>
                     </h1>
                     <p className="text-indigo-100 text-lg max-w-md leading-relaxed font-medium">
-                        Join the next generation of learners and instructors in a global ecosystem of knowledge.
+                        Join a global community of learners and teachers.
                     </p>
                 </motion.div>
 
@@ -129,11 +129,11 @@ export default function SignupPage() {
                         </div>
                         <div>
                             <p className="font-black uppercase tracking-widest text-[10px] text-indigo-200">Global Community</p>
-                            <p className="font-bold text-xl">1.2M+ Members</p>
+                            <p className="font-bold text-xl">1M+ Members</p>
                         </div>
                     </div>
                     <p className="text-indigo-50 leading-relaxed mb-8 font-medium">
-                        Transform your career with specialized tracks designed by industry titans.
+                        Learn from the best and grow your career with our expert-led courses.
                     </p>
                     <div className="flex -space-x-4">
                         {[1, 2, 3, 4, 5].map((i) => (
@@ -145,7 +145,7 @@ export default function SignupPage() {
                             />
                         ))}
                         <div className="w-12 h-12 rounded-2xl border-2 border-indigo-600 bg-white flex items-center justify-center text-xs font-black text-indigo-600 shadow-xl">
-                            +25k
+                            +10k
                         </div>
                     </div>
                 </motion.div>
@@ -161,10 +161,10 @@ export default function SignupPage() {
                     <div className="mb-12">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
                             <Sparkles className="w-3 h-3" />
-                            Elite Access
+                            Join EduHub
                         </div>
-                        <h2 className="text-4xl font-black text-slate-900 mb-2 uppercase tracking-tight">Create Identity</h2>
-                        <p className="text-slate-500 font-medium">Establish your presence in the EduHub ecosystem.</p>
+                        <h2 className="text-4xl font-black text-slate-900 mb-2 uppercase tracking-tight">Sign Up</h2>
+                        <p className="text-slate-500 font-medium">Create your account to get started.</p>
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -194,11 +194,11 @@ export default function SignupPage() {
                                         />
                                     </label>
                                 </div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-6">Biometric Identification</p>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-6">Profile Photo</p>
                             </div>
 
                             <Field>
-                                <FieldLabel className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-4 ml-1">Engagement Core</FieldLabel>
+                                <FieldLabel className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-4 ml-1">Choose Your Role</FieldLabel>
                                 <div className="grid grid-cols-2 gap-4">
                                     <label className={`
                                         relative flex flex-col items-center justify-center p-6 rounded-[2rem] border-2 cursor-pointer transition-all duration-500
@@ -213,8 +213,8 @@ export default function SignupPage() {
                                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-all duration-500 ${selectedRole === "student" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200 rotate-0" : "bg-slate-100 text-slate-400 -rotate-6"}`}>
                                             <GraduationCap className="w-7 h-7" />
                                         </div>
-                                        <span className={`font-black text-sm uppercase tracking-tighter transition-colors ${selectedRole === "student" ? "text-indigo-600" : "text-slate-400"}`}>Aspirant</span>
-                                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Acquire Skills</span>
+                                        <span className={`font-black text-sm uppercase tracking-tighter transition-colors ${selectedRole === "student" ? "text-indigo-600" : "text-slate-400"}`}>Student</span>
+                                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Start Learning</span>
 
                                         {selectedRole === "student" && (
                                             <motion.div
@@ -239,8 +239,8 @@ export default function SignupPage() {
                                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-all duration-500 ${selectedRole === "instructor" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200 rotate-0" : "bg-slate-100 text-slate-400 rotate-6"}`}>
                                             <UserCheck className="w-7 h-7" />
                                         </div>
-                                        <span className={`font-black text-sm uppercase tracking-tighter transition-colors ${selectedRole === "instructor" ? "text-indigo-600" : "text-slate-400"}`}>Architect</span>
-                                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Deploy Knowledge</span>
+                                        <span className={`font-black text-sm uppercase tracking-tighter transition-colors ${selectedRole === "instructor" ? "text-indigo-600" : "text-slate-400"}`}>Instructor</span>
+                                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Start Teaching</span>
 
                                         {selectedRole === "instructor" && (
                                             <motion.div
@@ -256,11 +256,11 @@ export default function SignupPage() {
 
                             <div className="grid md:grid-cols-2 gap-6">
                                 <Field>
-                                    <FieldLabel htmlFor="username" className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-2 ml-1">Alias</FieldLabel>
+                                    <FieldLabel htmlFor="username" className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-2 ml-1">Username</FieldLabel>
                                     <Input
                                         id="username"
                                         type="text"
-                                        placeholder="NEO"
+                                        placeholder="yourname"
                                         className="bg-white border-slate-100 h-14 rounded-2xl px-6 text-sm font-bold focus:ring-indigo-500 transition-all shadow-sm"
                                         {...register("username", { required: "Username is required" })}
                                     />
@@ -268,11 +268,11 @@ export default function SignupPage() {
                                 </Field>
 
                                 <Field>
-                                    <FieldLabel htmlFor="email" className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-2 ml-1">Neural Access</FieldLabel>
+                                    <FieldLabel htmlFor="email" className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-2 ml-1">Email Address</FieldLabel>
                                     <Input
                                         id="email"
                                         type="email"
-                                        placeholder="name@matrix.com"
+                                        placeholder="your@email.com"
                                         className="bg-white border-slate-100 h-14 rounded-2xl px-6 text-sm font-bold focus:ring-indigo-500 transition-all shadow-sm"
                                         {...register("email", { required: "Email is required" })}
                                     />
@@ -281,7 +281,7 @@ export default function SignupPage() {
                             </div>
 
                             <Field>
-                                <FieldLabel htmlFor="password" className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-2 ml-1">Security Key</FieldLabel>
+                                <FieldLabel htmlFor="password" className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-2 ml-1">Password</FieldLabel>
                                 <div className="relative">
                                     <Input
                                         id="password"
@@ -290,7 +290,7 @@ export default function SignupPage() {
                                         className="bg-white border-slate-100 h-14 rounded-2xl px-6 text-sm font-bold focus:ring-indigo-500 transition-all shadow-sm"
                                         {...register("password", {
                                             required: "Password is required",
-                                            minLength: { value: 8, message: "Security risk: Min 8 chars" }
+                                            minLength: { value: 8, message: "Min 8 characters" }
                                         })}
                                     />
                                     <button
@@ -312,9 +312,9 @@ export default function SignupPage() {
                                 {isLoading ? (
                                     <div className="flex items-center gap-3">
                                         <Loader2 className="w-5 h-5 animate-spin" />
-                                        Synchronizing...
+                                        Creating Account...
                                     </div>
-                                ) : "Initialize Account"}
+                                ) : "Create Account"}
                             </Button>
                         </FieldGroup>
                     </form>
@@ -339,7 +339,7 @@ export default function SignupPage() {
                     <p className="mt-12 text-center text-slate-400 font-bold text-xs uppercase tracking-tight">
                         Registered already?{" "}
                         <Link href="/login" className="text-indigo-600 hover:underline">
-                            Establish Connection
+                            Login
                         </Link>
                     </p>
                 </motion.div>

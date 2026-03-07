@@ -5,7 +5,7 @@ import logo from "../../assets/istockphoto-1215255370-612x612.jpg"
 export const Footer = () => {
     return (
         <footer className="bg-slate-900 text-white py-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid md:grid-cols-4 gap-12 mb-12">
                     <div className="col-span-2">
                         <div className="flex items-center gap-2 mb-6">

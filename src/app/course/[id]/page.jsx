@@ -181,29 +181,30 @@ export default function CourseDetailsPage() {
                                                   </div>
 
                                                   <div className="grid md:grid-cols-2 gap-4">
-                                                       {[
-                                                            'Build 16 web development projects for your portfolio',
-                                                            'Master React Hooks, Context API, and Redux',
-                                                            'Build professional websites with Tailwind CSS',
-                                                            'Create backend APIs with Node.js and Express',
-                                                            'Deploy your applications to Vercel and Netlify',
-                                                            'Learn modern JavaScript (ES6+) fundamentals'
-                                                       ].map((item, i) => (
-                                                            <div key={i} className="flex gap-3">
-                                                                 <CheckCircle className="w-5 h-5 text-green-500 shrink-0" />
-                                                                 <span className="text-slate-600 text-sm leading-relaxed">{item}</span>
-                                                            </div>
-                                                       ))}
+                                                       {course.learningOutcomes && course.learningOutcomes.length > 0 ? (
+                                                            course.learningOutcomes.map((item, i) => (
+                                                                 <div key={i} className="flex gap-3">
+                                                                      <CheckCircle className="w-5 h-5 text-green-500 shrink-0" />
+                                                                      <span className="text-slate-600 text-sm leading-relaxed">{item}</span>
+                                                                 </div>
+                                                            ))
+                                                       ) : (
+                                                            <p className="text-slate-500 text-sm italic">Specific learning outcomes for this course are coming soon.</p>
+                                                       )}
                                                   </div>
                                              </div>
 
                                              <div>
                                                   <h2 className="text-2xl font-bold text-slate-900 mb-6">Requirements</h2>
-                                                  <ul className="list-disc list-inside space-y-3 text-slate-600 text-sm">
-                                                       <li>No prior coding experience required - we start from scratch!</li>
-                                                       <li>A computer (Windows, Mac, or Linux) with internet access</li>
-                                                       <li>Basic understanding of how to use a web browser</li>
-                                                  </ul>
+                                                  {course.requirements && course.requirements.length > 0 ? (
+                                                       <ul className="list-disc list-inside space-y-3 text-slate-600 text-sm">
+                                                            {course.requirements.map((item, i) => (
+                                                                 <li key={i}>{item}</li>
+                                                            ))}
+                                                       </ul>
+                                                  ) : (
+                                                       <p className="text-slate-500 text-sm italic">There are no special requirements for this course.</p>
+                                                  )}
                                              </div>
                                         </motion.div>
                                    )}

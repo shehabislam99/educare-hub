@@ -85,11 +85,11 @@ export default function LoginPage() {
                     </Link>
 
                     <h1 className="text-6xl font-black font-display leading-[0.9] mb-8 uppercase tracking-tighter">
-                        Resume Your <br />
-                        <span className="text-indigo-200">Evolution.</span>
+                        Welcome <br />
+                        <span className="text-indigo-200">Back.</span>
                     </h1>
                     <p className="text-indigo-100 text-lg max-w-md leading-relaxed font-medium">
-                        Log back into your neural workspace and continue mastering the skills that matter.
+                        Log back into your account and continue learning new skills.
                     </p>
                 </motion.div>
 
@@ -105,7 +105,7 @@ export default function LoginPage() {
                         ))}
                     </div>
                     <p className="text-xl italic mb-10 text-indigo-50 font-medium leading-relaxed">
-                        "The most streamlined learning experience I've encountered in a decade of tech."
+                        "The best learning platform I've used. Everything is so easy and clear."
                     </p>
                     <div className="flex items-center gap-4">
                         <img
@@ -115,7 +115,7 @@ export default function LoginPage() {
                         />
                         <div>
                             <p className="font-black text-xl tracking-tight text-white">Alex Johnson</p>
-                            <p className="text-xs text-indigo-200 font-black uppercase tracking-widest">Lead Systems Architect</p>
+                            <p className="text-xs text-indigo-200 font-black uppercase tracking-widest">Lead Developer</p>
                         </div>
                     </div>
                 </motion.div>
@@ -131,20 +131,20 @@ export default function LoginPage() {
                     <div className="mb-12">
                         <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
                             <CheckCircle className="w-3 h-3" />
-                            Secure Sequence
+                            Secure Login
                         </div>
-                        <h2 className="text-4xl font-black text-slate-900 mb-2 uppercase tracking-tight">Establish Session</h2>
-                        <p className="text-slate-500 font-medium">Synchronize your credentials to continue.</p>
+                        <h2 className="text-4xl font-black text-slate-900 mb-2 uppercase tracking-tight">Login</h2>
+                        <p className="text-slate-500 font-medium">Please sign in to your account.</p>
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                         <FieldGroup className="gap-6">
                             <Field>
-                                <FieldLabel htmlFor="email" className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-2 ml-1">Access Email</FieldLabel>
+                                <FieldLabel htmlFor="email" className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-2 ml-1">Email Address</FieldLabel>
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="name@matrix.com"
+                                    placeholder="your@email.com"
                                     className="bg-white border-slate-100 h-14 rounded-2xl px-6 text-sm font-bold focus:ring-indigo-500 transition-all shadow-sm"
                                     {...register("email", { required: "Email is required" })}
                                 />
@@ -153,8 +153,8 @@ export default function LoginPage() {
 
                             <Field>
                                 <div className="flex items-center justify-between mb-2 ml-1">
-                                    <FieldLabel htmlFor="password" className="text-slate-900 font-black uppercase tracking-widest text-[10px]">Access Key</FieldLabel>
-                                    <Link href="#" className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-700">Restore Connection?</Link>
+                                    <FieldLabel htmlFor="password" className="text-slate-900 font-black uppercase tracking-widest text-[10px]">Password</FieldLabel>
+                                    <Link href="#" className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-700">Forgot Password?</Link>
                                 </div>
                                 <div className="relative">
                                     <Input
@@ -183,9 +183,9 @@ export default function LoginPage() {
                                 {isLoading ? (
                                     <div className="flex items-center gap-3">
                                         <Loader2 className="w-5 h-5 animate-spin" />
-                                        Verifying Session...
+                                        Checking...
                                     </div>
-                                ) : "Initialize Session"}
+                                ) : "Sign In"}
                             </Button>
                         </FieldGroup>
                     </form>
