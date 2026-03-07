@@ -3,17 +3,15 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
-import { connectToDatabase } from "@/lib/mongoConnect";
+import { connectToDatabase, getMongoClient } from "@/lib/mongoConnect";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 
-// Get the MongoDB client for the adapter
-const clientPromise = (async () => {
-  const db = await connectToDatabase();
-  return db.client;
-})();
+// Provide a Mongo client instance to NextAuth adapter without forcing DB connection at module load.
+const clientPromise =
+  process.env.MONGODB_URI ? Promise.resolve(getMongoClient()) : null;
 
 export const authOptions = {
-  adapter: MongoDBAdapter(clientPromise),
+  ...(clientPromise ? { adapter: MongoDBAdapter(clientPromise) } : {}),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
