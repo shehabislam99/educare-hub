@@ -7,7 +7,7 @@ import {
     FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, BookOpen, Sparkles, Github, Camera, User, Loader2, GraduationCap, UserCheck, Check } from "lucide-react";
+import { Eye, EyeOff, BookOpen, Sparkles, Camera, User, Loader2, GraduationCap, UserCheck, Check } from "lucide-react";
 import { uploadImage } from "@/lib/uploadImage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -325,22 +325,14 @@ export default function SignupPage() {
                         <div className="flex-1 h-[1px] bg-slate-200" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="flex justify-center">
                         <Button
                             onClick={() => handleSocialSignIn('google')}
                             variant="outline"
-                            className="h-14 border-slate-100 hover:bg-white hover:border-indigo-100 hover:text-indigo-600 rounded-2xl font-black text-[10px] uppercase tracking-widest gap-3 transition-all active:scale-95 shadow-sm"
+                            className="w-full h-14 border-slate-100 hover:bg-white hover:border-indigo-100 hover:text-indigo-600 rounded-2xl font-black text-[10px] uppercase tracking-widest gap-3 transition-all active:scale-95 shadow-sm"
                         >
                             <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
-                            Google
-                        </Button>
-                        <Button
-                            onClick={() => handleSocialSignIn('github')}
-                            variant="outline"
-                            className="h-14 border-slate-100 hover:bg-white hover:border-indigo-100 hover:text-indigo-600 rounded-2xl font-black text-[10px] uppercase tracking-widest gap-3 transition-all active:scale-95 shadow-sm"
-                        >
-                            <Github className="w-5 h-5" />
-                            GitHub
+                            Continue with Google
                         </Button>
                     </div>
 

@@ -1,12 +1,29 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Play, Star, Users, Award, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import FloatingCard from './FloatingCard';
 
 const HeroSection = () => {
+     const [courseCount, setCourseCount] = useState(0);
+
+     useEffect(() => {
+          const fetchCounts = async () => {
+               try {
+                    const res = await fetch('/api/course');
+                    if (res.ok) {
+                         const courses = await res.json();
+                         setCourseCount(courses.length);
+                    }
+               } catch (error) {
+                    console.error("Error fetching course counts:", error);
+               }
+          };
+          fetchCounts();
+     }, []);
+
      return (
           <section className="relative pt-20 pb-32 overflow-hidden">
                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
@@ -90,7 +107,7 @@ const HeroSection = () => {
                                         </div>
                                         <div>
                                              <p className="text-xs text-slate-500 font-medium">Certified Courses</p>
-                                             <p className="text-sm font-bold text-slate-900">1,200+ Available</p>
+                                             <p className="text-sm font-bold text-slate-900">{courseCount || "Loading..."}+ Available</p>
                                         </div>
                                    </div>
                               </FloatingCard>

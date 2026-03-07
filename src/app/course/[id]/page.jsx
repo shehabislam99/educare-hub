@@ -1,25 +1,91 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Star, Users, Clock, Globe, Award, PlayCircle, ChevronDown, CheckCircle, Share2, Heart, ShieldCheck, MessageSquare, Sparkles } from 'lucide-react';
+import { Star, Users, Clock, Globe, Award, PlayCircle, ChevronDown, CheckCircle, Share2, Heart, ShieldCheck, MessageSquare, Sparkles, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MOCK_COURSES } from '@/constants';
+import { useSession } from 'next-auth/react';
 
 export default function CourseDetailsPage() {
      const params = useParams();
      const id = params?.id;
+     const { data: session } = useSession();
 
-     const course = MOCK_COURSES.find(c => c.id === id) || MOCK_COURSES[0];
+     const [course, setCourse] = useState(null);
+     const [isLoading, setIsLoading] = useState(true);
      const [activeTab, setActiveTab] = useState('overview');
      const [expandedSections, setExpandedSections] = useState(['s1']);
+     const [isAddingToCart, setIsAddingToCart] = useState(false);
+     const [isBuying, setIsBuying] = useState(false);
+     const [cartMessage, setCartMessage] = useState("");
+
+     useEffect(() => {
+          if (!id) return;
+          const fetchCourse = async () => {
+               try {
+                    const res = await fetch(`/api/course/${id}`);
+                    if (res.ok) {
+                         const data = await res.json();
+                         setCourse(data);
+                    }
+               } catch (error) {
+                    console.error("Error fetching course:", error);
+               } finally {
+                    setIsLoading(false);
+               }
+          };
+          fetchCourse();
+     }, [id]);
 
      const toggleSection = (sectionId) => {
           setExpandedSections(prev =>
                prev.includes(sectionId) ? prev.filter(id => id !== sectionId) : [...prev, sectionId]
           );
      };
+
+     const handleAddToCart = () => {
+          setIsAddingToCart(true);
+          setTimeout(() => {
+               setIsAddingToCart(false);
+               setCartMessage("Added to cart!");
+               setTimeout(() => setCartMessage(""), 3000);
+          }, 800);
+     };
+
+     const handleBuyNow = () => {
+          setIsBuying(true);
+          setTimeout(() => {
+               setIsBuying(false);
+               alert("Redirecting to checkout...");
+          }, 800);
+     };
+
+     if (isLoading) {
+          return (
+               <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4">
+                    <Loader2 className="w-12 h-12 text-indigo-600 animate-spin" />
+                    <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Loading Course Details...</p>
+               </div>
+          );
+     }
+
+     if (!course) {
+          return (
+               <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-6">
+                    <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center">
+                         <ShieldCheck className="w-10 h-10 text-slate-300" />
+                    </div>
+                    <div className="text-center">
+                         <h2 className="text-2xl font-bold text-slate-900 mb-2">Course Not Found</h2>
+                         <p className="text-slate-500 mb-8">The course you are looking for was not found.</p>
+                         <Link href="/course" className="btn-primary px-8 py-3">Explore Other Courses</Link>
+                    </div>
+               </div>
+          );
+     }
+
+     const isInstructor = session?.user?.role === "instructor";
 
      return (
           <div className="min-h-screen bg-white">
@@ -40,23 +106,29 @@ export default function CourseDetailsPage() {
                                         <div className="flex items-center gap-2">
                                              <div className="flex gap-0.5">
                                                   {[1, 2, 3, 4, 5].map((i) => (
-                                                       <Star key={i} className={`w-4 h-4 ${i <= Math.floor(course.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-slate-600'}`} />
+                                                       <Star key={i} className={`w-4 h-4 ${i <= Math.floor(course?.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-slate-600'}`} />
                                                   ))}
                                              </div>
-                                             <span className="text-yellow-400 font-bold">{course.rating}</span>
-                                             <span className="text-slate-400">({course.reviewsCount} ratings)</span>
+                                             <span className="text-yellow-400 font-bold">{course?.rating || 0}</span>
+                                             <span className="text-slate-400">({course?.reviewsCount || 0} ratings)</span>
                                         </div>
-                                        <div className="flex items-center gap-2 text-slate-300">
+                                        <div className="flex items-center gap-2">
                                              <Users className="w-4 h-4" />
-                                             <span>{course.studentsCount.toLocaleString()} students</span>
+                                             <span>{(course?.studentsCount || 0).toLocaleString()} students</span>
                                         </div>
                                    </div>
 
                                    <div className="flex items-center gap-4">
-                                        <img src={course.instructorImage} alt={course.instructor} className="w-12 h-12 rounded-full border-2 border-slate-700" />
+                                        <div className="w-12 h-12 rounded-full border-2 border-slate-700 overflow-hidden bg-slate-800 flex items-center justify-center">
+                                             {course.instructorImage ? (
+                                                  <img src={course.instructorImage} alt={course.instructorName || course.instructor} className="w-full h-full object-cover" />
+                                             ) : (
+                                                  <span className="text-xl font-black text-slate-500">{(course.instructorName || course.instructor || "I")[0]}</span>
+                                             )}
+                                        </div>
                                         <div>
                                              <p className="text-sm text-slate-400">Created by</p>
-                                             <p className="font-bold text-white hover:text-indigo-400 cursor-pointer transition-colors">{course.instructor}</p>
+                                             <p className="font-bold text-white hover:text-indigo-400 cursor-pointer transition-colors">{course.instructorName || course.instructor}</p>
                                         </div>
                                         <div className="ml-8 flex items-center gap-6 text-sm text-slate-400">
                                              <div className="flex items-center gap-2">
@@ -218,10 +290,45 @@ export default function CourseDetailsPage() {
                                                   <span className="text-sm font-bold text-green-600">31% off</span>
                                              </div>
 
-                                             <div className="space-y-3 mb-8">
-                                                  <button className="w-full btn-primary py-4 text-lg">Add to Cart</button>
-                                                  <button className="w-full btn-secondary py-4">Buy Now</button>
-                                             </div>
+                                             {!isInstructor ? (
+                                                  <div className="space-y-4 mb-8">
+                                                       <button
+                                                            onClick={handleAddToCart}
+                                                            disabled={isAddingToCart}
+                                                            className="w-full h-14 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-400 text-white rounded-2xl font-black text-sm uppercase tracking-[0.2em] transition-all shadow-xl shadow-indigo-600/20 active:scale-95 flex items-center justify-center gap-2"
+                                                       >
+                                                            {isAddingToCart ? <Loader2 className="w-5 h-5 animate-spin" /> : "Add to Cart"}
+                                                       </button>
+                                                       <button
+                                                            onClick={handleBuyNow}
+                                                            disabled={isBuying}
+                                                            className="w-full h-14 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white rounded-2xl font-black text-sm uppercase tracking-[0.2em] transition-all active:scale-95 flex items-center justify-center gap-2"
+                                                       >
+                                                            {isBuying ? <Loader2 className="w-5 h-5 animate-spin" /> : "Buy Now"}
+                                                       </button>
+
+                                                       <AnimatePresence>
+                                                            {cartMessage && (
+                                                                 <motion.p
+                                                                      initial={{ opacity: 0, y: 10 }}
+                                                                      animate={{ opacity: 1, y: 0 }}
+                                                                      exit={{ opacity: 0 }}
+                                                                      className="text-center text-green-600 font-bold text-xs uppercase tracking-widest"
+                                                                 >
+                                                                      {cartMessage}
+                                                                 </motion.p>
+                                                            )}
+                                                       </AnimatePresence>
+                                                  </div>
+                                             ) : (
+                                                  <div className="mb-8 p-6 bg-slate-900 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden group">
+                                                       <div className="absolute inset-0 bg-indigo-600/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                       <p className="text-indigo-400 text-[10px] font-black uppercase tracking-[0.3em] text-center mb-2">Professional Access</p>
+                                                       <p className="text-slate-400 text-[10px] text-center font-bold leading-relaxed px-4">
+                                                            Acquisition protocols are disabled for instructor accounts.
+                                                       </p>
+                                                  </div>
+                                             )}
 
                                              <p className="text-center text-xs text-slate-400 mb-8">30-Day Money-Back Guarantee</p>
 
@@ -229,7 +336,7 @@ export default function CourseDetailsPage() {
                                                   <h4 className="text-sm font-bold text-slate-900">This course includes:</h4>
                                                   <div className="space-y-3">
                                                        {[
-                                                            { icon: Clock, text: '45.5 hours on-demand video' },
+                                                            { icon: Clock, text: course.duration || '45.5 hours on-demand video' },
                                                             { icon: Award, text: 'Certificate of completion' },
                                                             { icon: Globe, text: 'Full lifetime access' },
                                                             { icon: ShieldCheck, text: 'Access on mobile and TV' }
@@ -254,21 +361,27 @@ export default function CourseDetailsPage() {
                                    </div>
 
                                    {/* Instructor Card */}
-                                   <div className="card p-6">
+                                   <div className="card p-6 bg-slate-50 border-slate-200">
                                         <div className="flex items-center gap-4 mb-4">
-                                             <img src={course.instructorImage} alt={course.instructor} className="w-14 h-14 rounded-2xl object-cover" />
+                                             <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-2xl font-black text-slate-300 overflow-hidden">
+                                                  {course.instructorImage ? (
+                                                       <img src={course.instructorImage} alt="" className="w-full h-full object-cover" />
+                                                  ) : (
+                                                       (course.instructorName || course.instructor || "I")[0]
+                                                  )}
+                                             </div>
                                              <div>
-                                                  <h4 className="font-bold text-slate-900">{course.instructor}</h4>
-                                                  <p className="text-xs text-slate-500">Senior Web Developer</p>
+                                                  <h4 className="font-bold text-slate-900">{course.instructorName || course.instructor}</h4>
+                                                  <p className="text-xs text-slate-500">Professional Mentor</p>
                                              </div>
                                         </div>
                                         <div className="grid grid-cols-2 gap-4 mb-6">
                                              <div className="text-center p-3 bg-slate-50 rounded-xl">
-                                                  <p className="text-lg font-bold text-slate-900">4.8</p>
+                                                  <p className="text-lg font-bold text-slate-900">{course.rating || "4.8"}</p>
                                                   <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Rating</p>
                                              </div>
                                              <div className="text-center p-3 bg-slate-50 rounded-xl">
-                                                  <p className="text-lg font-bold text-slate-900">12k</p>
+                                                  <p className="text-lg font-bold text-slate-900">{(course.studentsCount || 0).toLocaleString()}</p>
                                                   <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Students</p>
                                              </div>
                                         </div>

@@ -7,7 +7,7 @@ import {
     FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, BookOpen, Star, CheckCircle, Github, Loader2 } from "lucide-react";
+import { Eye, EyeOff, BookOpen, Star, CheckCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";

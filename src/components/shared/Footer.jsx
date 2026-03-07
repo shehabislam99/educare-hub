@@ -18,7 +18,7 @@ export const Footer = () => {
                         </div>
                         <p className="text-slate-400 max-w-sm leading-relaxed text-sm font-medium">
                             Empowering learners worldwide with high-quality,
-                            accessible education from industry experts. Join our global ecosystem of knowledge.
+                            accessible education from industry experts. Join our community of learners.
                         </p>
                     </div>
                     <div>
@@ -36,7 +36,7 @@ export const Footer = () => {
                             </li>
                             <li>
                                 <Link href="/dashboard/student" className="hover:text-white transition-colors">
-                                    Student Workspace
+                                    Student Dashboard
                                 </Link>
                             </li>
                         </ul>
@@ -64,7 +64,7 @@ export const Footer = () => {
                 </div>
                 <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">
-                        © 2024 EduHub Inc. System Synchronized.
+                        © 2024 EduHub Inc. All Rights Reserved.
                     </p>
                     <div className="flex gap-6">
                         <a href="#" className="text-slate-500 hover:text-white transition-colors"><span className="text-[10px] font-black uppercase tracking-widest">Twitter</span></a>

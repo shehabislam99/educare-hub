@@ -67,7 +67,7 @@ export const Navbar = () => {
               href="/course"
               className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors"
             >
-              Explore-Courses
+              Explore Courses
             </Link>
 
             {isLoggedIn ?
@@ -80,9 +80,6 @@ export const Navbar = () => {
                     </span>
                   </button>
                 )}
-                <button className="p-2 text-slate-600 hover:bg-slate-50 rounded-full transition-colors">
-                  <Bell className="w-5 h-5" />
-                </button>
 
                 <div className="relative">
                   <button
