@@ -96,7 +96,10 @@ export default function CoursesPage() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="font-bold">
-                Courses <span className="text-blue-800">({filteredCourses.length})</span>
+                Courses{" "}
+                <span className="text-blue-800">
+                  ({filteredCourses.length})
+                </span>
               </h3>
             </div>
 
@@ -129,10 +132,9 @@ export default function CoursesPage() {
               </div>
             : <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredCourses.map((course) => (
-                  <Link
+                  <div
                     key={course._id || course.id}
-                    href={`/course/${course._id || course.id}`}
-                    className="group bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all"
+                    className="bg-white border border-slate-200 rounded-3xl overflow-hidden group  shadow-md shadow-indigo-50 transition-all"
                   >
                     <div className="h-48 relative overflow-hidden">
                       <img
@@ -143,44 +145,77 @@ export default function CoursesPage() {
                         alt={course.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      <span className="absolute top-4 left-4 px-3 py-1 rounded-lg bg-white/90 dark:bg-slate-900/90 text-[10px] font-black uppercase tracking-wider text-indigo-600">
+                      <span className="absolute top-4 left-4 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider text-indigo-600">
                         {course.category || "General"}
                       </span>
                     </div>
 
-                    <div className="p-6">
-                      <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">
-                        {course.instructorName ||
-                          course.instructor ||
-                          "Instructor"}
-                      </p>
-                      <h4 className="text-lg font-black text-slate-900 dark:text-slate-100 mb-4 line-clamp-2">
+                    <div className="p-7">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-slate-100 border border-slate-200 flex items-center justify-center">
+                          {course.instructorImage ?
+                            <img
+                              src={course.instructorImage}
+                              alt={
+                                course.instructorName ||
+                                course.instructor ||
+                                "Instructor"
+                              }
+                              className="w-full h-full object-cover"
+                            />
+                          : <span className="text-[10px] font-black text-slate-500 uppercase">
+                              {
+                                (course.instructorName ||
+                                  course.instructor ||
+                                  "I")[0]
+                              }
+                            </span>
+                          }
+                        </div>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                          {course.instructorName ||
+                            course.instructor ||
+                            "Instructor"}
+                        </p>
+                      </div>
+                      <h4 className="text-lg font-black text-indigo-600 mb-4 line-clamp-2 group-hover:text-indigo-600 transition-colors uppercase tracking-tight leading-snug">
                         {course.title}
                       </h4>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center justify-between mb-5">
                         <div>
-                          <p className="text-xl font-black text-slate-900 dark:text-slate-100">
-                            ${course.price}
-                          </p>
                           <p className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 dark:text-slate-400 mt-1">
                             <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                             {course.rating || "0"}
                           </p>
                         </div>
-                        <div className="text-right text-xs font-bold text-slate-500 dark:text-slate-400 space-y-1">
-                          <p className="inline-flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" />
-                            {course.duration || "45H"}
-                          </p>
-                          <p className="inline-flex items-center gap-1">
-                            <Users className="w-3.5 h-3.5" />
-                            {(course.studentsCount || 0).toLocaleString()}
-                          </p>
+                        <div className="text-right text-xs font-bold text-slate-400 uppercase tracking-wider">
+                          ({course.reviewsCount || 0} reviews)
                         </div>
                       </div>
+                      <div className="flex items-center justify-between pt-5 border-t border-slate-100 dark:border-slate-800">
+                        <span className="text-2xl font-black">
+                          ${course.price}
+                        </span>
+                        <div className="flex items-center gap-3 text-xs font-bold text-slate-500 dark:text-slate-400">
+                          <span className="inline-flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" />
+                            {course.duration || "45H"}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <Users className="w-3.5 h-3.5" />
+                            {(course.studentsCount || 0).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                      <Link
+                        href={`/course/${course._id || course.id}`}
+                        className="mt-5 inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-black uppercase tracking-widest hover:bg-indigo-700 transition-colors"
+                      >
+                        View Details
+                      </Link>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             }

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Save, X, Camera, Loader2, Sparkles, Plus, Trash2 } from "lucide-react";
+import { Save, X, Camera, Loader2, Plus, Trash2 } from "lucide-react";
 import { uploadImage } from "@/lib/uploadImage";
 
 const emptySection = { title: "", lessons: [""] };
@@ -236,9 +236,7 @@ export default function CourseForm({
       <form onSubmit={handleSubmit(submitForm)} className="space-y-8">
         <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-8">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
-              <Sparkles className="text-indigo-600 w-5 h-5" />
-            </div>
+           
             <h2 className="text-xl font-black text-slate-900 uppercase tracking-tighter">
               Course Metadata
             </h2>
@@ -251,7 +249,7 @@ export default function CourseForm({
               </label>
               <input
                 {...register("title", { required: "Title is required" })}
-                className="w-full bg-slate-50 border-none rounded-2xl h-12 px-4 text-sm font-bold focus:ring-2 focus:ring-indigo-500"
+                className="w-full bg-slate-50 border border-slate-300 rounded-2xl h-12 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Complete Web Development Bootcamp 2024"
               />
               {errors.title && (
@@ -266,9 +264,11 @@ export default function CourseForm({
                 Description
               </label>
               <textarea
-                {...register("description", { required: "Description is required" })}
+                {...register("description", {
+                  required: "Description is required",
+                })}
                 rows={5}
-                className="w-full bg-slate-50 border-none rounded-[1.5rem] p-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500"
+                className="w-full bg-slate-50 border border-slate-300 rounded-[1.5rem] p-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Master HTML, CSS, JavaScript, React, and Node.js from scratch..."
               />
               {errors.description && (
@@ -290,26 +290,26 @@ export default function CourseForm({
                 type="number"
                 step="0.01"
                 {...register("price", { required: "Price is required" })}
-                className="bg-slate-50 border-none rounded-2xl h-12 px-4 text-sm font-bold focus:ring-2 focus:ring-indigo-500"
+                className="bg-slate-50 border border-slate-300 rounded-2xl h-12 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Price"
               />
               <input
                 type="number"
                 step="0.1"
                 {...register("rating")}
-                className="bg-slate-50 border-none rounded-2xl h-12 px-4 text-sm font-bold focus:ring-2 focus:ring-indigo-500"
+                className="bg-slate-50 border border-slate-300 rounded-2xl h-12 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Rating"
               />
               <input
                 type="number"
                 {...register("reviewsCount")}
-                className="bg-slate-50 border-none rounded-2xl h-12 px-4 text-sm font-bold focus:ring-2 focus:ring-indigo-500"
+                className="bg-slate-50 border border-slate-300 rounded-2xl h-12 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Reviews Count"
               />
               <input
                 type="number"
                 {...register("studentsCount")}
-                className="bg-slate-50 border-none rounded-2xl h-12 px-4 text-sm font-bold focus:ring-2 focus:ring-indigo-500"
+                className="bg-slate-50 border border-slate-300 rounded-2xl h-12 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Students Count"
               />
             </div>
@@ -317,12 +317,12 @@ export default function CourseForm({
             <div className="grid grid-cols-2 gap-4">
               <input
                 {...register("duration")}
-                className="bg-slate-50 border-none rounded-2xl h-12 px-4 text-sm font-bold focus:ring-2 focus:ring-indigo-500"
+                className="bg-slate-50 border border-slate-300 rounded-2xl h-12 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Duration (e.g. 45h 30m)"
               />
               <input
                 {...register("lastUpdated")}
-                className="bg-slate-50 border-none rounded-2xl h-12 px-4 text-sm font-bold focus:ring-2 focus:ring-indigo-500"
+                className="bg-slate-50 border border-slate-300 rounded-2xl h-12 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Last Updated (e.g. Jan 2024)"
               />
             </div>
@@ -330,7 +330,7 @@ export default function CourseForm({
             <div className="grid grid-cols-2 gap-4">
               <select
                 {...register("level")}
-                className="bg-slate-50 border-none rounded-2xl h-12 px-4 text-sm font-bold focus:ring-2 focus:ring-indigo-500"
+                className="bg-slate-50 border border-slate-300 rounded-2xl h-12 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               >
                 <option value="">Select Level</option>
                 <option value="Beginner">Beginner</option>
@@ -339,7 +339,7 @@ export default function CourseForm({
               </select>
               <select
                 {...register("category")}
-                className="bg-slate-50 border-none rounded-2xl h-12 px-4 text-sm font-bold focus:ring-2 focus:ring-indigo-500"
+                className="bg-slate-50 border border-slate-300 rounded-2xl h-12 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               >
                 <option value="">Select Category</option>
                 <option value="Development">Development</option>
@@ -352,12 +352,17 @@ export default function CourseForm({
           </div>
 
           <div className="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6">
-            <h2 className="text-lg font-black uppercase tracking-tighter">Visuals</h2>
+            <h2 className="text-lg font-black uppercase tracking-tighter">
+              Visuals
+            </h2>
             <div className="relative group aspect-video rounded-2xl overflow-hidden bg-slate-100 border-2 border-dashed border-slate-200">
-              {imagePreview ? (
-                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-center p-6">
+              {imagePreview ?
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              : <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-center p-6">
                   <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center">
                     <Camera className="w-6 h-6 text-slate-300" />
                   </div>
@@ -365,7 +370,7 @@ export default function CourseForm({
                     Upload Thumbnail
                   </p>
                 </div>
-              )}
+              }
 
               {isUploading && (
                 <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-10">
@@ -390,7 +395,7 @@ export default function CourseForm({
                   }
                 },
               })}
-              className="w-full bg-slate-50 border-none rounded-2xl h-12 px-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500"
+              className="w-full bg-slate-50 border border-slate-300 rounded-2xl h-12 px-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               placeholder="Or paste thumbnail URL"
             />
           </div>
@@ -413,12 +418,17 @@ export default function CourseForm({
 
           <div className="space-y-4">
             {curriculum.map((section, sectionIndex) => (
-              <div key={sectionIndex} className="border border-slate-100 rounded-2xl p-5 space-y-3">
+              <div
+                key={sectionIndex}
+                className="border border-slate-100 rounded-2xl p-5 space-y-3"
+              >
                 <div className="flex gap-3">
                   <input
                     value={section.title}
-                    onChange={(e) => updateSectionTitle(sectionIndex, e.target.value)}
-                    className="flex-1 bg-slate-50 border-none rounded-xl h-11 px-4 text-sm font-bold focus:ring-2 focus:ring-indigo-500"
+                    onChange={(e) =>
+                      updateSectionTitle(sectionIndex, e.target.value)
+                    }
+                    className="flex-1 bg-slate-50 border border-slate-300 rounded-xl h-11 px-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     placeholder={`Section ${sectionIndex + 1} title`}
                   />
                   <button
@@ -437,9 +447,13 @@ export default function CourseForm({
                       <input
                         value={lesson}
                         onChange={(e) =>
-                          updateLesson(sectionIndex, lessonIndex, e.target.value)
+                          updateLesson(
+                            sectionIndex,
+                            lessonIndex,
+                            e.target.value,
+                          )
                         }
-                        className="flex-1 bg-slate-50 border-none rounded-xl h-10 px-4 text-sm font-medium focus:ring-2 focus:ring-indigo-500"
+                        className="flex-1 bg-slate-50 border border-slate-300 rounded-xl h-10 px-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         placeholder={`Lesson ${lessonIndex + 1}`}
                       />
                       <button
@@ -471,17 +485,23 @@ export default function CourseForm({
           <button
             type="button"
             onClick={onCancel}
-            className="text-sm font-black text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-all"
+            className="text-sm font-black py-4 px-12 rounded-2xl border border-slate-300 text-slate-400 hover:bg-indigo-400 hover:text-slate-600 uppercase tracking-widest transition-all"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-indigo-600 text-white font-black py-4 px-12 rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 flex items-center gap-3 uppercase text-xs tracking-[0.2em]"
+            className="bg-indigo-600 text-white font-black py-4 px-12 rounded-2xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-50 flex items-center gap-3 uppercase text-xs tracking-[0.2em]"
           >
-            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            {isSubmitting ? "Saving..." : isEdit ? "Update Course" : "Create Course"}
+            {isSubmitting ?
+              <Loader2 className="w-4 h-4 animate-spin" />
+            : <Save className="w-4 h-4" />}
+            {isSubmitting ?
+              "Saving..."
+            : isEdit ?
+              "Update Course"
+            : "Create Course"}
           </button>
         </div>
       </form>
