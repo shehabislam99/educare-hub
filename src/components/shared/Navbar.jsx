@@ -11,10 +11,9 @@ import {
   Menu,
   X,
   LogOut,
-  BookOpen,
   Layout,
-  Settings,
 } from "lucide-react";
+import logo from "../../assets/istockphoto-1215255370-612x612.jpg"
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession, signOut } from "next-auth/react";
 
@@ -36,12 +35,12 @@ export const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
-                <BookOpen className="text-white w-6 h-6" />
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center overflow-hidden transition-transform group-hover:scale-105">
+                <img src={logo.src || logo} alt="EduHub Logo" className="w-full h-full object-cover" />
               </div>
               <span className="text-xl font-bold font-display tracking-tight text-slate-900">
-                EduFlow
+                EduHub
               </span>
             </Link>
 
@@ -57,12 +56,18 @@ export const Navbar = () => {
           </div>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-8">
             <Link
-              href="/courses"
-              className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
+              href="/"
+              className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors"
             >
-              Explore
+              Home
+            </Link>
+            <Link
+              href="/course"
+              className="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition-colors"
+            >
+              Explore-Courses
             </Link>
 
             {isLoggedIn ?
@@ -125,14 +130,11 @@ export const Navbar = () => {
                         >
                           <Layout className="w-4 h-4" /> Dashboard
                         </Link>
-                        <Link
-                          href="/settings"
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
-                        >
-                          <Settings className="w-4 h-4" /> Settings
-                        </Link>
                         <button
-                          onClick={() => signOut({ callbackUrl: "/login" })}
+                          onClick={async () => {
+                            await fetch("/api/logout", { method: "POST" });
+                            signOut({ callbackUrl: "/login" });
+                          }}
                           className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                         >
                           <LogOut className="w-4 h-4" /> Sign Out

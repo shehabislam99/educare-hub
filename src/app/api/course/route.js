@@ -2,16 +2,24 @@ import { connectToDatabase } from "@/lib/mongoConnect";
 import { MOCK_COURSES } from "@/constants";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req) {
     try {
+        const { searchParams } = new URL(req.url);
+        const instructorId = searchParams.get("instructorId");
+
         const db = await connectToDatabase();
         const coursesCollection = db.collection("courses");
 
-        // Fetch all courses
-        let courses = await coursesCollection.find({}).toArray();
+        let query = {};
+        if (instructorId) {
+            query.instructorId = instructorId;
+        }
 
-        // Seed the database if it's empty
-        if (courses.length === 0) {
+        // Fetch courses based on query
+        let courses = await coursesCollection.find(query).toArray();
+
+        // Seed the database if it's empty (only on broad fetch)
+        if (courses.length === 0 && !instructorId) {
             console.log("Seeding database with mock courses...");
             await coursesCollection.insertMany(MOCK_COURSES);
             courses = await coursesCollection.find({}).toArray();

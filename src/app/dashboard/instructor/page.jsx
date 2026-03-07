@@ -2,163 +2,210 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Plus, Users, BookOpen, BarChart3, DollarSign, Edit, Trash2, CheckCircle, Clock, MoreVertical, Eye } from 'lucide-react';
+import { Plus, Users, BookOpen, BarChart3, DollarSign, Edit, Star, Loader2, TrendingUp, ArrowUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { MOCK_COURSES } from '@/constants';
 import { useSession } from 'next-auth/react';
 
 export default function InstructorDashboard() {
     const { data: session } = useSession();
+    const [courses, setCourses] = React.useState([]);
+    const [isLoading, setIsLoading] = React.useState(true);
     const userName = session?.user?.name || session?.user?.username || "Instructor";
 
-    const instructorCourses = MOCK_COURSES.slice(0, 3).map((c, i) => ({
-        ...c,
-        students: [124, 85, 210][i],
-        revenue: [1240, 850, 4200][i],
-        status: i === 2 ? 'Published' : 'Draft'
-    }));
+    React.useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const res = await fetch('/api/my-courses');
+                if (res.ok) {
+                    const data = await res.json();
+                    setCourses(data);
+                }
+            } catch (error) {
+                console.error("Error fetching instructor courses:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (session) {
+            fetchCourses();
+        }
+    }, [session]);
+
+    const totalStudents = courses.reduce((acc, c) => acc + (c.studentsCount || 0), 0);
+    const totalRevenue = courses.reduce((acc, c) => acc + (parseFloat(c.price || 0) * (c.studentsCount || 0)), 0);
+    const activeCourses = courses.length;
+    const avgRating = courses.length > 0
+        ? (courses.reduce((acc, c) => acc + (c.rating || 0), 0) / courses.length).toFixed(1)
+        : "0.0";
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center py-20">
+                <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+            </div>
+        );
+    }
 
     return (
-        <div className="min-h-screen bg-slate-50 pb-20">
-            {/* Dashboard Header */}
-            <div className="bg-white border-b border-slate-100 pt-8 pb-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div>
-                            <h1 className="text-3xl font-bold text-slate-900 mb-2">Instructor Dashboard</h1>
-                            <p className="text-slate-500">Welcome back, {userName}. Here's what's happening with your courses.</p>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <Link href="/dashboard/instructor/create-course" className="flex items-center gap-2 bg-indigo-600 text-white font-bold py-3 px-6 rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100">
-                                <Plus className="w-5 h-5" />
-                                Create New Course
-                            </Link>
-                        </div>
-                    </div>
+        <div className="space-y-10">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-900 mb-2 font-display uppercase tracking-tight">Instructor Hub</h1>
+                    <p className="text-slate-500 font-medium">Monitoring your educational impact in real-time.</p>
                 </div>
+                <Link href="/dashboard/instructor/create-course" className="bg-slate-900 text-white font-bold py-4 px-8 rounded-2xl hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center gap-2 group">
+                    <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+                    Launch New Course
+                </Link>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
-                {/* Stats Overview */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    {[
-                        { label: 'Total Revenue', value: '$6,290', icon: DollarSign, color: 'green' },
-                        { label: 'Total Students', value: '419', icon: Users, color: 'blue' },
-                        { label: 'Active Courses', value: '5', icon: BookOpen, color: 'indigo' },
-                        { label: 'Avg. Rating', value: '4.8', icon: BarChart3, color: 'orange' }
-                    ].map((stat, i) => (
-                        <div key={i} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className={`w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center`}>
-                                    <stat.icon className={`text-indigo-600 w-6 h-6`} />
-                                </div>
-                                <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-lg">+12.5%</span>
+            {/* Premium Stats Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                    { label: 'Revenue', value: `$${totalRevenue.toLocaleString()}`, icon: DollarSign, trend: '+12.5%', color: 'emerald' },
+                    { label: 'Students', value: totalStudents.toLocaleString(), icon: Users, trend: '+43', color: 'indigo' },
+                    { label: 'Courses', value: activeCourses.toString(), icon: BookOpen, trend: 'Active', color: 'amber' },
+                    { label: 'Avg Rating', value: avgRating, icon: Star, trend: 'Top 5%', color: 'rose' }
+                ].map((stat, i) => (
+                    <div key={i} className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative group overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4">
+                            <ArrowUpRight className="w-4 h-4 text-slate-200 group-hover:text-slate-400 transition-colors" />
+                        </div>
+                        <div className="flex flex-col h-full justify-between">
+                            <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mb-6">
+                                <stat.icon className="text-indigo-600 w-6 h-6" />
                             </div>
-                            <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
-                            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{stat.label}</p>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="grid lg:grid-cols-3 gap-8">
-                    {/* Courses List */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-slate-900">Your Courses</h2>
-                            <Link href="/dashboard/instructor/all-course" className="text-sm font-bold text-indigo-600 hover:underline">View All</Link>
-                        </div>
-
-                        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead className="bg-slate-50 border-b border-slate-100">
-                                        <tr>
-                                            <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Course</th>
-                                            <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Students</th>
-                                            <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Earnings</th>
-                                            <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Status</th>
-                                            <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100">
-                                        {instructorCourses.map((course) => (
-                                            <tr key={course.id} className="hover:bg-slate-50/50 transition-colors">
-                                                <td className="px-6 py-4">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0">
-                                                            <img src={course.thumbnail} alt={course.title} className="w-full h-full object-cover" />
-                                                        </div>
-                                                        <p className="text-sm font-bold text-slate-900 line-clamp-1">{course.title}</p>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <span className="text-sm font-medium text-slate-600">{course.students}</span>
-                                                </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <span className="text-sm font-bold text-slate-900">${course.revenue}</span>
-                                                </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg ${course.status === 'Published' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'
-                                                        }`}>
-                                                        {course.status}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <div className="flex items-center justify-end gap-2">
-                                                        <button className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all">
-                                                            <Edit className="w-4 h-4" />
-                                                        </button>
-                                                        <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                            <div>
+                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{stat.label}</h3>
+                                <div className="flex items-baseline gap-2">
+                                    <span className="text-3xl font-black text-slate-900 tracking-tighter">{stat.value}</span>
+                                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded bg-green-50 text-green-600`}>{stat.trend}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
+                ))}
+            </div>
 
-                    {/* Sidebar */}
-                    <div className="space-y-8">
-                        {/* Quick Tips */}
-                        <div className="bg-indigo-600 p-6 rounded-3xl shadow-xl shadow-indigo-100 text-white relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4 opacity-10">
-                                <Plus className="w-20 h-20 rotate-12" />
-                            </div>
-                            <div className="relative z-10">
-                                <h3 className="font-bold text-lg mb-2">Pro Tip! 💡</h3>
-                                <p className="text-indigo-100 text-sm leading-relaxed mb-4">
-                                    Add more quizzes and interactive content to increase student engagement by up to 40%.
-                                </p>
-                                <button className="text-xs font-bold underline">Learn More</button>
-                            </div>
+            <div className="grid lg:grid-cols-3 gap-10">
+                {/* Courses Performance */}
+                <div className="lg:col-span-2 space-y-6">
+                    <div className="flex justify-between items-center px-2">
+                        <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Performance Matrix</h2>
+                        <Link href="/dashboard/instructor/manage-course" className="text-sm font-bold text-indigo-600 flex items-center gap-1 hover:underline">
+                            Full Management <ArrowUpRight className="w-4 h-4" />
+                        </Link>
+                    </div>
+
+                    <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead>
+                                    <tr className="bg-slate-50/50">
+                                        <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Master Course</th>
+                                        <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Engagement</th>
+                                        <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Gross</th>
+                                        <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Edit</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-50">
+                                    {courses.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="4" className="px-8 py-20 text-center">
+                                                <div className="flex flex-col items-center gap-4">
+                                                    <div className="w-16 h-16 bg-slate-50 rounded-3xl flex items-center justify-center">
+                                                        <BookOpen className="w-8 h-8 text-slate-200" />
+                                                    </div>
+                                                    <p className="font-bold text-slate-400">No active deployments yet.</p>
+                                                    <Link href="/dashboard/instructor/create-course" className="text-sm font-bold text-indigo-600 underline">Start your first course</Link>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        courses.slice(0, 5).map((course) => (
+                                            <tr key={course._id} className="hover:bg-slate-50/50 transition-colors group">
+                                                <td className="px-8 py-6">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 rounded-2xl overflow-hidden shrink-0 bg-slate-100 relative shadow-sm">
+                                                            <img src={course.thumbnail} alt="" className="w-full h-full object-cover" />
+                                                            <div className="absolute inset-0 bg-black/5" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-bold text-slate-900 line-clamp-1 uppercase tracking-tight">{course.title}</p>
+                                                            <p className="text-[10px] font-bold text-slate-400">{course.category}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6 text-center">
+                                                    <div className="flex flex-col items-center">
+                                                        <span className="text-sm font-black text-slate-900">{course.studentsCount || 0}</span>
+                                                        <span className="text-[10px] font-bold text-slate-400 uppercase">Users</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6 text-center">
+                                                    <span className="text-sm font-black text-slate-900">${(parseFloat(course.price || 0) * (course.studentsCount || 0)).toLocaleString()}</span>
+                                                </td>
+                                                <td className="px-8 py-6 text-right">
+                                                    <Link href={`/dashboard/instructor/edit-course/${course._id}`} className="inline-flex p-2.5 bg-slate-50 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all">
+                                                        <Edit className="w-4 h-4" />
+                                                    </Link>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
+                </div>
 
-                        {/* Recent Reviews */}
-                        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                            <h3 className="font-bold text-slate-900 mb-6">Recent Reviews</h3>
-                            <div className="space-y-6">
-                                {[
-                                    { name: 'David Lee', rating: 5, comment: 'Excellent delivery and practical examples!', course: 'Advanced React Part 2' },
-                                    { name: 'Sarah M.', rating: 4, comment: 'Very helpful contents. Could be slightly slower.', course: 'UI Design Fundamentals' }
-                                ].map((review, i) => (
-                                    <div key={i} className="space-y-2">
-                                        <div className="flex justify-between items-start">
-                                            <p className="text-sm font-bold text-slate-900">{review.name}</p>
-                                            <div className="flex gap-0.5">
-                                                {[...Array(review.rating)].map((_, i) => (
-                                                    < Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <p className="text-xs text-slate-500 italic">"{review.comment}"</p>
-                                        <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">{review.course}</p>
-                                    </div>
-                                ))}
+                {/* Growth & Feedback */}
+                <div className="space-y-8">
+                    {/* Growth Card */}
+                    <div className="bg-indigo-600 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-indigo-100">
+                        <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+                        <div className="relative z-10">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 bg-white/20 rounded-xl">
+                                    <TrendingUp className="w-5 h-5 text-white" />
+                                </div>
+                                <h3 className="font-bold text-sm tracking-tight">Growth Insights</h3>
                             </div>
+                            <p className="text-2xl font-black mb-2">Build dynamic labs</p>
+                            <p className="text-indigo-100 text-sm leading-relaxed mb-6 opacity-80">
+                                Students engaging with labs are 5x more likely to complete your kurs.
+                            </p>
+                            <button className="w-full py-3 bg-white text-indigo-600 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-50 transition-all">
+                                Upgrade Content
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Feedback Preview */}
+                    <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white">
+                        <div className="flex items-center justify-between mb-8">
+                            <h3 className="font-black text-xs uppercase tracking-widest text-slate-400">Latest Pulse</h3>
+                            <button className="text-[10px] font-bold text-white/40 hover:text-white uppercase tracking-tighter">See All</button>
+                        </div>
+                        <div className="space-y-6">
+                            {[
+                                { name: 'Techie John', text: 'This changed my workflow entirely.', stars: 5 },
+                                { name: 'Mina S.', text: 'The last module was eye opening.', stars: 4 }
+                            ].map((pulse, i) => (
+                                <div key={i} className="space-y-2 border-l-2 border-indigo-500/30 pl-4 py-1">
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-xs font-black">{pulse.name}</p>
+                                        <div className="flex gap-0.5">
+                                            {[...Array(pulse.stars)].map((_, j) => (
+                                                <Star key={j} className="w-2.5 h-2.5 fill-indigo-400 text-indigo-400" />
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-slate-400 italic font-medium leading-relaxed">"{pulse.text}"</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

@@ -33,3 +33,58 @@ export async function GET(req, { params }) {
         );
     }
 }
+
+export async function PUT(req, { params }) {
+    try {
+        const { id } = await params;
+        const body = await req.json();
+
+        // Remove _id from update data to avoid "The _id field is immutable" error
+        const { _id, ...updateData } = body;
+
+        const db = await connectToDatabase();
+        const coursesCollection = db.collection("courses");
+
+        let result;
+        try {
+            result = await coursesCollection.updateOne(
+                { _id: new ObjectId(id) },
+                { $set: { ...updateData, updatedAt: new Date() } }
+            );
+        } catch (e) {
+            // If it's not a valid ObjectId, search by string ID
+            result = await coursesCollection.updateOne(
+                { id: id },
+                { $set: { ...updateData, updatedAt: new Date() } }
+            );
+        }
+
+        if (result.matchedCount === 0) {
+            return NextResponse.json({ error: "Course not found" }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: "Course updated successfully" });
+    } catch (error) {
+        console.error("Course update error:", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+}
+
+export async function DELETE(req, { params }) {
+    try {
+        const { id } = await params;
+        const db = await connectToDatabase();
+        const coursesCollection = db.collection("courses");
+
+        const result = await coursesCollection.deleteOne({ _id: new ObjectId(id) });
+
+        if (result.deletedCount === 0) {
+            return NextResponse.json({ error: "Course not found" }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: "Course deleted successfully" });
+    } catch (error) {
+        console.error("Course deletion error:", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
+}

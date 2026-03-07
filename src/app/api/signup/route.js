@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
     try {
-        const { username, email, password, role } = await req.json();
+        const { username, email, password, role, image } = await req.json();
 
         if (!username || !email || !password) {
             return NextResponse.json(
@@ -34,6 +34,7 @@ export async function POST(req) {
             email,
             password: hashedPassword,
             role: role || "student",
+            image: image || null,
             createdAt: new Date(),
         };
 

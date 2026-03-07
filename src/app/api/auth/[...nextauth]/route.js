@@ -1,8 +1,7 @@
 import NextAuth from "next-auth";
-import Email from "next-auth/providers/email";
-import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import FaceBookProvider from "next-auth/providers/facebook";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
 
 import { connectToDatabase } from "@/lib/mongoConnect";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
@@ -16,27 +15,81 @@ const clientPromise = (async () => {
 export const authOptions = {
   adapter: MongoDBAdapter(clientPromise),
   providers: [
-    GithubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
-    }),
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
     }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
+
+        const db = await connectToDatabase();
+        const usersCollection = db.collection("users");
+
+        const user = await usersCollection.findOne({ email: credentials.email });
+        if (!user || !user.password) return null;
+
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isPasswordValid) return null;
+
+        return {
+          id: user._id.toString(),
+          name: user.username,
+          email: user.email,
+          image: user.image,
+          role: user.role || "student",
+        };
+      }
+    }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google") {
+        try {
+          const db = await connectToDatabase();
+          const usersCollection = db.collection("users");
+          const dbUser = await usersCollection.findOne({ email: user.email });
+
+          if (!dbUser) {
+            // New social user - default role is student
+            user.role = "student";
+          } else {
+            // Existing user - ensure role is present
+            user.role = dbUser.role || "student";
+            if (!dbUser.role) {
+              await usersCollection.updateOne(
+                { email: user.email },
+                { $set: { role: "student" } }
+              );
+            }
+          }
+        } catch (error) {
+          console.error("Error in signIn callback:", error);
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.role = user.role || "student";
-        token.id = user.id || user._id;
+        token.id = user.id || user._id?.toString();
+        token.picture = user.image;
+      }
+      if (trigger === "update" && session?.role) {
+        token.role = session.role;
       }
       return token;
     },
     async session({ session, token }) {
       if (session?.user) {
-        session.user.role = token.role;
+        session.user.role = token.role || "student";
         session.user.id = token.id;
+        session.user.image = token.picture;
       }
       return session;
     },

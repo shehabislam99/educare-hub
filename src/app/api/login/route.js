@@ -42,6 +42,7 @@ export async function POST(req) {
             userId: user._id.toString(),
             email: user.email,
             username: user.username,
+            role: user.role || "student",
         })
             .setProtectedHeader({ alg: "HS256" })
             .setExpirationTime("1d")
@@ -55,6 +56,7 @@ export async function POST(req) {
                     id: user._id.toString(),
                     username: user.username,
                     email: user.email,
+                    role: user.role || "student",
                 },
                 token,
             },

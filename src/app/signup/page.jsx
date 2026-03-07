@@ -3,36 +3,68 @@
 import { Button } from "@/components/ui/button";
 import {
     Field,
-    FieldDescription,
     FieldGroup,
     FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, BookOpen, Star, Sparkles, Github } from "lucide-react";
+import { Eye, EyeOff, BookOpen, Sparkles, Github, Camera, User, Loader2, GraduationCap, UserCheck, Check } from "lucide-react";
+import { uploadImage } from "@/lib/uploadImage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
+import { signIn } from "next-auth/react";
 
 export default function SignupPage() {
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors },
-    } = useForm();
+    } = useForm({
+        defaultValues: {
+            role: "student"
+        }
+    });
+
+    const selectedRole = watch("role");
     const router = useRouter();
 
     const [showPassword, setShowPassword] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
+    const [isUploading, setIsUploading] = React.useState(false);
+    const [imagePreview, setImagePreview] = React.useState(null);
+    const [selectedFile, setSelectedFile] = React.useState(null);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const onSubmit = async (data) => {
         setIsLoading(true);
+        let imageUrl = null;
         try {
+            if (selectedFile) {
+                setIsUploading(true);
+                imageUrl = await uploadImage(selectedFile);
+                setIsUploading(false);
+            }
+
+            const signupData = { ...data, image: imageUrl };
+
             const res = await fetch("/api/signup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data),
+                body: JSON.stringify(signupData),
             });
 
             const result = await res.json();
@@ -47,7 +79,12 @@ export default function SignupPage() {
             alert("An error occurred. Please try again.");
         } finally {
             setIsLoading(false);
+            setIsUploading(false);
         }
+    };
+
+    const handleSocialSignIn = (provider) => {
+        signIn(provider, { callbackUrl: "/dashboard" });
     };
 
     return (
@@ -65,46 +102,49 @@ export default function SignupPage() {
                     className="relative z-10"
                 >
                     <Link href="/" className="flex items-center gap-2 mb-12">
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
+                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
                             <BookOpen className="text-indigo-600 w-6 h-6" />
                         </div>
-                        <span className="text-2xl font-bold font-display tracking-tight">EduFlow</span>
+                        <span className="text-2xl font-bold font-display tracking-tight text-white hover:text-indigo-200 transition-colors">EduHub</span>
                     </Link>
 
-                    <h1 className="text-5xl font-bold font-display leading-tight mb-6">
-                        Start Your <br />
-                        <span className="text-indigo-200">Learning Journey</span>
+                    <h1 className="text-6xl font-black font-display leading-[0.9] mb-8 uppercase tracking-tighter">
+                        Empower Your <br />
+                        <span className="text-indigo-200">Potential.</span>
                     </h1>
-                    <p className="text-indigo-100 text-lg max-w-md leading-relaxed">
-                        Create an account today and get unlimited access to expert-led courses and certifications.
+                    <p className="text-indigo-100 text-lg max-w-md leading-relaxed font-medium">
+                        Join the next generation of learners and instructors in a global ecosystem of knowledge.
                     </p>
                 </motion.div>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2 }}
-                    className="relative z-10 bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-8 max-w-md"
+                    className="relative z-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-10 max-w-md shadow-2xl"
                 >
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                            <Sparkles className="text-white w-5 h-5" />
+                    <div className="flex items-center gap-4 mb-6">
+                        <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                            <Sparkles className="text-white w-6 h-6" />
                         </div>
-                        <p className="font-bold">Over 1,200+ Courses</p>
+                        <div>
+                            <p className="font-black uppercase tracking-widest text-[10px] text-indigo-200">Global Community</p>
+                            <p className="font-bold text-xl">1.2M+ Members</p>
+                        </div>
                     </div>
-                    <p className="text-indigo-50 leading-relaxed mb-6">
-                        From web development to business strategy, learn anything with our curated paths designed for beginners and experts alike.
+                    <p className="text-indigo-50 leading-relaxed mb-8 font-medium">
+                        Transform your career with specialized tracks designed by industry titans.
                     </p>
-                    <div className="flex -space-x-3">
+                    <div className="flex -space-x-4">
                         {[1, 2, 3, 4, 5].map((i) => (
                             <img
                                 key={i}
-                                className="w-10 h-10 rounded-full border-2 border-indigo-600"
-                                src={`https://i.pravatar.cc/100?img=${i + 20}`}
+                                className="w-12 h-12 rounded-2xl border-2 border-indigo-600 shadow-xl"
+                                src={`https://i.pravatar.cc/150?img=${i + 25}`}
                                 alt="User"
                             />
                         ))}
-                        <div className="w-10 h-10 rounded-full border-2 border-indigo-600 bg-white flex items-center justify-center text-[10px] font-bold text-indigo-600">
+                        <div className="w-12 h-12 rounded-2xl border-2 border-indigo-600 bg-white flex items-center justify-center text-xs font-black text-indigo-600 shadow-xl">
                             +25k
                         </div>
                     </div>
@@ -116,47 +156,79 @@ export default function SignupPage() {
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="w-full max-w-md"
+                    className="w-full max-w-lg"
                 >
-                    <div className="mb-10">
-                        <h2 className="text-3xl font-bold text-slate-900 mb-2 font-display">Create an account</h2>
-                        <p className="text-slate-500">Sign up in seconds to start your free trial.</p>
+                    <div className="mb-12">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
+                            <Sparkles className="w-3 h-3" />
+                            Elite Access
+                        </div>
+                        <h2 className="text-4xl font-black text-slate-900 mb-2 uppercase tracking-tight">Create Identity</h2>
+                        <p className="text-slate-500 font-medium">Establish your presence in the EduHub ecosystem.</p>
                     </div>
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                        <FieldGroup className="gap-5">
-                            <Field>
-                                <FieldLabel htmlFor="username" className="text-slate-700 font-semibold">Username</FieldLabel>
-                                <Input
-                                    id="username"
-                                    type="text"
-                                    placeholder="yourname"
-                                    className="bg-white border-slate-200 h-12 rounded-xl focus:ring-indigo-500 transition-all"
-                                    {...register("username", { required: "Username is required" })}
-                                />
-                                {errors.username && <span className="text-red-500 text-xs">{errors.username.message}</span>}
-                            </Field>
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                        <FieldGroup className="gap-6">
+                            {/* Profile Image Upload */}
+                            <div className="flex flex-col items-center justify-center mb-4">
+                                <div className="relative group">
+                                    <div className="w-28 h-28 rounded-[2rem] border-4 border-white shadow-2xl overflow-hidden bg-slate-100 flex items-center justify-center relative transition-transform group-hover:scale-105 duration-500">
+                                        {imagePreview ? (
+                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <User className="w-14 h-14 text-slate-300" />
+                                        )}
+                                        {isUploading && (
+                                            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+                                                <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <label className="absolute -bottom-2 -right-2 w-10 h-10 bg-slate-900 rounded-2xl flex items-center justify-center text-white cursor-pointer shadow-xl hover:bg-indigo-600 transition-all border-2 border-white group-hover:scale-110 z-10">
+                                        <Camera className="w-5 h-5" />
+                                        <input
+                                            type="file"
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                        />
+                                    </label>
+                                </div>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-6">Biometric Identification</p>
+                            </div>
 
                             <Field>
-                                <FieldLabel className="text-slate-700 font-semibold mb-2">I want to join as</FieldLabel>
+                                <FieldLabel className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-4 ml-1">Engagement Core</FieldLabel>
                                 <div className="grid grid-cols-2 gap-4">
                                     <label className={`
-                                        flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all
-                                        ${register("role").value === "student" ? "border-indigo-600 bg-indigo-50" : "border-slate-200 bg-white hover:border-indigo-300"}
+                                        relative flex flex-col items-center justify-center p-6 rounded-[2rem] border-2 cursor-pointer transition-all duration-500
+                                        ${selectedRole === "student" ? "border-indigo-600 bg-white ring-8 ring-indigo-50 shadow-2xl" : "border-slate-100 bg-white hover:border-indigo-200 shadow-sm"}
                                     `}>
                                         <input
                                             type="radio"
                                             value="student"
                                             className="hidden"
-                                            defaultChecked
                                             {...register("role")}
                                         />
-                                        <span className="font-bold text-slate-900">Student</span>
-                                        <span className="text-xs text-slate-500">I want to learn</span>
+                                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-all duration-500 ${selectedRole === "student" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200 rotate-0" : "bg-slate-100 text-slate-400 -rotate-6"}`}>
+                                            <GraduationCap className="w-7 h-7" />
+                                        </div>
+                                        <span className={`font-black text-sm uppercase tracking-tighter transition-colors ${selectedRole === "student" ? "text-indigo-600" : "text-slate-400"}`}>Aspirant</span>
+                                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Acquire Skills</span>
+
+                                        {selectedRole === "student" && (
+                                            <motion.div
+                                                layoutId="role-check"
+                                                className="absolute top-4 right-4 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg"
+                                            >
+                                                <Check className="w-4 h-4 text-white" />
+                                            </motion.div>
+                                        )}
                                     </label>
+
                                     <label className={`
-                                        flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all
-                                        ${register("role").value === "instructor" ? "border-indigo-600 bg-indigo-50" : "border-slate-200 bg-white hover:border-indigo-300"}
+                                        relative flex flex-col items-center justify-center p-6 rounded-[2rem] border-2 cursor-pointer transition-all duration-500
+                                        ${selectedRole === "instructor" ? "border-indigo-600 bg-white ring-8 ring-indigo-50 shadow-2xl" : "border-slate-100 bg-white hover:border-indigo-200 shadow-sm"}
                                     `}>
                                         <input
                                             type="radio"
@@ -164,79 +236,118 @@ export default function SignupPage() {
                                             className="hidden"
                                             {...register("role")}
                                         />
-                                        <span className="font-bold text-slate-900">Instructor</span>
-                                        <span className="text-xs text-slate-500">I want to teach</span>
+                                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-all duration-500 ${selectedRole === "instructor" ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200 rotate-0" : "bg-slate-100 text-slate-400 rotate-6"}`}>
+                                            <UserCheck className="w-7 h-7" />
+                                        </div>
+                                        <span className={`font-black text-sm uppercase tracking-tighter transition-colors ${selectedRole === "instructor" ? "text-indigo-600" : "text-slate-400"}`}>Architect</span>
+                                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Deploy Knowledge</span>
+
+                                        {selectedRole === "instructor" && (
+                                            <motion.div
+                                                layoutId="role-check"
+                                                className="absolute top-4 right-4 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg"
+                                            >
+                                                <Check className="w-4 h-4 text-white" />
+                                            </motion.div>
+                                        )}
                                     </label>
                                 </div>
                             </Field>
 
-                            <Field>
-                                <FieldLabel htmlFor="email" className="text-slate-700 font-semibold">Email</FieldLabel>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="name@company.com"
-                                    className="bg-white border-slate-200 h-12 rounded-xl focus:ring-indigo-500 transition-all"
-                                    {...register("email", { required: "Email is required" })}
-                                />
-                                {errors.email && <span className="text-red-500 text-xs">{errors.email.message}</span>}
-                            </Field>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <Field>
+                                    <FieldLabel htmlFor="username" className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-2 ml-1">Alias</FieldLabel>
+                                    <Input
+                                        id="username"
+                                        type="text"
+                                        placeholder="NEO"
+                                        className="bg-white border-slate-100 h-14 rounded-2xl px-6 text-sm font-bold focus:ring-indigo-500 transition-all shadow-sm"
+                                        {...register("username", { required: "Username is required" })}
+                                    />
+                                    {errors.username && <span className="text-red-500 text-[10px] font-black uppercase mt-1 ml-1">{errors.username.message}</span>}
+                                </Field>
+
+                                <Field>
+                                    <FieldLabel htmlFor="email" className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-2 ml-1">Neural Access</FieldLabel>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="name@matrix.com"
+                                        className="bg-white border-slate-100 h-14 rounded-2xl px-6 text-sm font-bold focus:ring-indigo-500 transition-all shadow-sm"
+                                        {...register("email", { required: "Email is required" })}
+                                    />
+                                    {errors.email && <span className="text-red-500 text-[10px] font-black uppercase mt-1 ml-1">{errors.email.message}</span>}
+                                </Field>
+                            </div>
 
                             <Field>
-                                <FieldLabel htmlFor="password" className="text-slate-700 font-semibold">Password</FieldLabel>
+                                <FieldLabel htmlFor="password" className="text-slate-900 font-black uppercase tracking-widest text-[10px] mb-2 ml-1">Security Key</FieldLabel>
                                 <div className="relative">
                                     <Input
                                         id="password"
                                         type={showPassword ? "text" : "password"}
                                         placeholder="••••••••"
-                                        className="bg-white border-slate-200 h-12 rounded-xl focus:ring-indigo-500 transition-all"
+                                        className="bg-white border-slate-100 h-14 rounded-2xl px-6 text-sm font-bold focus:ring-indigo-500 transition-all shadow-sm"
                                         {...register("password", {
                                             required: "Password is required",
-                                            minLength: { value: 8, message: "Must be at least 8 characters" }
+                                            minLength: { value: 8, message: "Security risk: Min 8 chars" }
                                         })}
                                     />
                                     <button
                                         type="button"
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                        className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-indigo-600 transition-colors"
                                         onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                     </button>
                                 </div>
-                                {errors.password && <span className="text-red-500 text-xs">{errors.password.message}</span>}
+                                {errors.password && <span className="text-red-500 text-[10px] font-black uppercase mt-1 ml-1">{errors.password.message}</span>}
                             </Field>
 
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-lg shadow-lg shadow-indigo-100 transition-all"
+                                className="w-full h-16 bg-slate-900 hover:bg-indigo-600 text-white rounded-2xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-[0.98] mt-4"
                             >
-                                {isLoading ? "Creating account..." : "Sign up"}
+                                {isLoading ? (
+                                    <div className="flex items-center gap-3">
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                        Synchronizing...
+                                    </div>
+                                ) : "Initialize Account"}
                             </Button>
                         </FieldGroup>
                     </form>
 
-                    <div className="my-8 flex items-center gap-4 text-slate-400">
+                    <div className="my-10 flex items-center gap-6 text-slate-300">
                         <div className="flex-1 h-[1px] bg-slate-200" />
-                        <span className="text-sm font-medium">Or sign up with</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">External Auth</span>
                         <div className="flex-1 h-[1px] bg-slate-200" />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <Button variant="outline" className="h-12 border-slate-200 hover:bg-white hover:border-slate-300 rounded-xl font-semibold gap-2">
+                    <div className="grid grid-cols-2 gap-6">
+                        <Button
+                            onClick={() => handleSocialSignIn('google')}
+                            variant="outline"
+                            className="h-14 border-slate-100 hover:bg-white hover:border-indigo-100 hover:text-indigo-600 rounded-2xl font-black text-[10px] uppercase tracking-widest gap-3 transition-all active:scale-95 shadow-sm"
+                        >
                             <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
                             Google
                         </Button>
-                        <Button variant="outline" className="h-12 border-slate-200 hover:bg-white hover:border-slate-300 rounded-xl font-semibold gap-2">
+                        <Button
+                            onClick={() => handleSocialSignIn('github')}
+                            variant="outline"
+                            className="h-14 border-slate-100 hover:bg-white hover:border-indigo-100 hover:text-indigo-600 rounded-2xl font-black text-[10px] uppercase tracking-widest gap-3 transition-all active:scale-95 shadow-sm"
+                        >
                             <Github className="w-5 h-5" />
                             GitHub
                         </Button>
                     </div>
 
-                    <p className="mt-10 text-center text-slate-600">
-                        Already have an account?{" "}
-                        <Link href="/login" className="font-bold text-indigo-600 hover:text-indigo-700">
-                            Log in
+                    <p className="mt-12 text-center text-slate-400 font-bold text-xs uppercase tracking-tight">
+                        Registered already?{" "}
+                        <Link href="/login" className="text-indigo-600 hover:underline">
+                            Establish Connection
                         </Link>
                     </p>
                 </motion.div>
