@@ -151,7 +151,7 @@ export default function InstructorDashboard() {
                         </p>
                         <h3 className="text-lg font-bold text-slate-900 mt-1 line-clamp-1">{course.title}</h3>
                         <p className="text-sm text-slate-500 mt-1">
-                          {students} students • ${revenue.toLocaleString()} revenue
+                          {students} students - ${revenue.toLocaleString()} revenue
                         </p>
                       </div>
                       <Link
