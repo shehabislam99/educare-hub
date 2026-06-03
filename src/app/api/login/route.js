@@ -19,7 +19,6 @@ export async function POST(req) {
         const db = await connectToDatabase();
         const usersCollection = db.collection("users");
 
-        // Find user by email
         const user = await usersCollection.findOne({ email });
         if (!user) {
             return NextResponse.json(
